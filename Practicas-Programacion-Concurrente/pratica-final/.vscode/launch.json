@@ -1,0 +1,69 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Launch Current File",
+            "request": "launch",
+            "mainClass": "${file}"
+        },
+        {
+            "type": "java",
+            "name": "Launch Cliente",
+            "request": "launch",
+            "mainClass": "Cliente",
+            "projectName": "PRACTICA_FINAL_ffca4137"
+        },
+        {
+            "type": "java",
+            "name": "Launch Servidor",
+            "request": "launch",
+            "mainClass": "Servidor",
+            "projectName": "PRACTICA_FINAL_ffca4137"
+        },
+        {
+            "type": "java",
+            "name": "Launch AnsiConsoleExample",
+            "request": "launch",
+            "mainClass": "org.fusesource.jansi.AnsiConsoleExample",
+            "projectName": "jansi"
+        },
+        {
+            "type": "java",
+            "name": "Launch AnsiConsoleExample2",
+            "request": "launch",
+            "mainClass": "org.fusesource.jansi.AnsiConsoleExample2",
+            "projectName": "jansi"
+        },
+        {
+            "type": "java",
+            "name": "Launch AnsiMain",
+            "request": "launch",
+            "mainClass": "org.fusesource.jansi.AnsiMain",
+            "projectName": "jansi"
+        },
+        {
+            "type": "java",
+            "name": "Launch InstallUninstallTest",
+            "request": "launch",
+            "mainClass": "org.fusesource.jansi.InstallUninstallTest",
+            "projectName": "jansi"
+        },
+        {
+            "type": "java",
+            "name": "Launch OSInfo",
+            "request": "launch",
+            "mainClass": "org.fusesource.jansi.internal.OSInfo",
+            "projectName": "jansi"
+        },
+        {
+            "type": "java",
+            "name": "Launch Cliente(1)",
+            "request": "launch",
+            "mainClass": "Cliente"
+        }
+    ]
+}

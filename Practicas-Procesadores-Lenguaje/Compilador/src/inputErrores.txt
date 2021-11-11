@@ -1,0 +1,21 @@
+enum color = { ROJO, VERDE, AZUL, AMARILLO ;
+
+void funcion(int a int b){
+	int a = b;
+	return a ++ ;
+}
+
+void Main(){
+	int a = 5
+	int a = 5;
+	int a = 5 + + 6;
+	int a = 5;
+	String b 6;
+	String b = "Hola";
+	int a[5 = {1,2,3 4 5;
+	int a[5] = {1,2,3,4,5};
+	int a[3][] = {1,2,3,4};
+	int a[3][3] = ;
+	int a[3][] = {1,2,3,4};
+	int a[1][2] = {{1,2{,{12}};
+}

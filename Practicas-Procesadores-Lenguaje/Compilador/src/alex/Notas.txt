@@ -1,0 +1,4 @@
+ANALIZADOR LEXICO:
+1. Comentar import errors... y sus relacionados (para probar lexico solo).
+2. java_cup aparece al poner %cup en el analizadorlexico.l
+3. Signo numeros enteros.

@@ -1,0 +1,8 @@
+/process datos.ra
+
+resFec1(f1) := project fecha (reservas);
+resFec2(f2) := resFec1;
+resFecNoPri := project f1 (select f1>f2 (resFec1 product resFec2));
+resPriFec(fecha) := resFec1 difference resFecNoPri;
+vista1(nombre) := project nombre ((reservas njoin resPriFec) njoin patrones);
+

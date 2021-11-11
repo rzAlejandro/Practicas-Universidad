@@ -1,0 +1,414 @@
+package asint;
+
+import java_cup.runtime.*;
+import alex.*;
+import asint.*;
+import ast.*;
+import errors.GestionErroresTiny;
+import java.util.*;
+
+scan with {: return getScanner().next_token(); :};
+parser code {: 
+   private GestionErroresTiny errores;
+   public void syntax_error(Symbol unidadLexica) {
+     errores.errorSintactico((UnidadLexica)unidadLexica);
+   }
+:};
+init with {: 
+   errores = new GestionErroresTiny();
+   AnalizadorLexicoTiny alex = (AnalizadorLexicoTiny)getScanner();
+   alex.fijaGestionErrores(errores);
+:};
+
+
+terminal  TokenValue  MAIN, 
+            IDEN, ENT, CADENA, CARACTER,
+            WHILE, IF, ELSE, END, PRINT, SWITCH, CASE, STRUCT, ENUM, BARTOLO, RETURN, 
+            INT, VOID, CHAR, STRING, BOOL, TRUE, FALSE, 
+            PAP, PCIERRE, LAP, LCIERRE, CAP, CCIERRE, 
+            IGUAL, COMA, PUNTOYCOMA, PUNTO, DOSPUNTOS,
+            MASMAS, MAS, MENOSMENOS, MENOS, POR, DIV, MOD, AND, OR, DESIG, NOT, IGIG, MAYIG, MAY, MENIG, MEN;
+             
+
+              
+
+non terminal Programa S; 
+non terminal StructEnum DecStructEnum;
+non terminal Struct Struct; 
+non terminal ArrayList<InsDec> LStruct; 
+non terminal EnumClass EnumClass; 
+non terminal ArrayList<String> LEnum; 
+non terminal Funciones DecFunciones; 
+non terminal Funcion Funcion; 
+non terminal MainFuncion MainF; 
+non terminal Bloque Bloque; 
+non terminal ArrayList<Instruccion> Lins; 
+non terminal Instruccion Ins ; 
+non terminal Tipo Type; 
+non terminal TipoFunc TypeFunc; 
+non terminal Expresion Cond, Exp0, Exp1, Exp2, Exp3, Exp4, Exp5;
+non terminal InsIf If; 
+non terminal InsWhile While; 
+non terminal InsSwitch Switch; 
+non terminal InsFunc InsFunc; 
+non terminal InsBart Bartolo; 
+non terminal InsRet Return;
+non terminal InsPrint Print; 
+non terminal InsAsig Asignacion, InsExp; //insexp para ++ y --
+non terminal InsDec Declaracion;
+non terminal ExpFunc ExpFunc; 
+non terminal ParteIzq ParteIzquierda;
+non terminal ParteDer ParteDerecha; 
+non terminal Estructura Estructura;
+non terminal ArrayList<Expresion> EstructuraArray;
+non terminal ArrayList<InsDec> SecParam;  //no puede ser DsI porque igual no esta inicilaizada una variable y no tiene sentido pasarla por parametro
+non terminal ArrayList<Case> ListaCases; 
+non terminal InitArray LInitArray, InitArray, SecInitArray;  
+non terminal ArrayList<Expresion> SecExp; 
+       
+               
+
+S ::= DecStructEnum:strenum DecFunciones:funcs MainF:m
+         {: RESULT = new Programa(strenum, funcs, m); :};
+
+DecStructEnum ::= DecStructEnum:strenum Struct:str 
+                     {: RESULT = strenum; strenum.addS(str); :}
+                  | DecStructEnum:strenum EnumClass:en
+                     {: RESULT = strenum; strenum.addE(en); :}
+                  | 
+                     {: RESULT = new StructEnum(); :};
+
+
+DecFunciones ::= DecFunciones:funcs Funcion:fun
+                  {: RESULT = funcs; funcs.addF(fun); :} 
+                 | 
+                  {: RESULT = new Funciones(); :};
+                  
+
+MainF ::= VOID MAIN PAP PCIERRE Bloque:bl 
+            {: RESULT = new MainFuncion(bl); :}
+          | VOID MAIN error 
+            {: RESULT = null; :} ;
+
+Struct ::= STRUCT IDEN:id LAP LStruct:ls LCIERRE PUNTOYCOMA
+            {: RESULT =  new Struct(id.lexema, ls); :} 
+           | STRUCT IDEN error  //error en las llaves
+            {: RESULT = null; :} ;
+
+LStruct ::= LStruct:ls Declaracion:dec PUNTOYCOMA
+               {: RESULT = ls; ls.add(dec); :}
+            | Declaracion:dec PUNTOYCOMA
+               {: RESULT = new ArrayList<InsDec>(); RESULT.add(dec); :} ;
+
+
+EnumClass ::= ENUM IDEN:id IGUAL LAP LEnum:le LCIERRE PUNTOYCOMA
+               {: RESULT = new EnumClass(id.lexema, le); :} 
+              | ENUM IDEN error  //error en las llaves
+               {: RESULT = null; :} ;
+
+LEnum ::= LEnum:le COMA IDEN:id 
+            {: RESULT = le; le.add(id.lexema); :}
+          | IDEN:id
+            {: RESULT = new ArrayList<String>(); RESULT.add(id.lexema); :}
+          | error COMA 
+            {: RESULT = null; :} 
+          | error IDEN 
+            {: RESULT = null; :} ;
+
+
+Funcion ::= TypeFunc:tf IDEN:id PAP SecParam:secP PCIERRE Bloque:bl
+               {: RESULT = new Funcion(tf, id.lexema, secP, bl); :} 
+            | TypeFunc IDEN error 
+               {: RESULT = null; :} 
+            | error IDEN PAP SecParam PCIERRE Bloque 
+               {: RESULT = null; :} 
+            | TypeFunc error PAP SecParam PCIERRE Bloque 
+               {: RESULT = null; :} ;
+
+SecParam ::= SecParam:secP COMA Declaracion: dec
+               {: RESULT = secP; secP.add(dec); :}
+             | Declaracion: dec
+               {: RESULT = new ArrayList<InsDec>(); RESULT.add(dec); :}
+             | 
+               {: RESULT = new ArrayList<InsDec>(); :}
+             | error Declaracion //Falta de ,
+               {: RESULT = null; :} ;
+
+
+Bloque ::= LAP Lins:lins LCIERRE
+            {: RESULT = new Bloque(lins); :} 
+           | LAP Lins error  //Captura error de cierre corchete. El de abrir no parece necesario.
+            {: RESULT = null; :} ;
+
+
+Lins ::= Lins:l Ins:ins
+            {: RESULT = l; l.add(ins); :}
+         | Ins:ins
+            {: RESULT = new ArrayList<Instruccion>(); RESULT.add(ins); :} ;
+        
+Ins ::= If:if1
+            {: RESULT = if1; :}
+        | While:while1
+            {: RESULT = while1; :}
+        | Switch:switch1
+            {: RESULT = switch1; :} 
+        | Asignacion:asig PUNTOYCOMA
+            {: RESULT = asig; :}
+        | Declaracion:dec PUNTOYCOMA 
+            {: RESULT = dec; :}
+        | Return:ret PUNTOYCOMA 
+            {: RESULT = ret; :}
+        | Bartolo:bar PUNTOYCOMA 
+            {: RESULT = bar; :}    
+        | InsFunc:fun PUNTOYCOMA
+            {: RESULT = fun; :}  
+        | InsExp:exp PUNTOYCOMA
+            {: RESULT = exp; :} 
+        | Print:print PUNTOYCOMA
+            {: RESULT = print; :} 
+        | Asignacion error //errores por falta de ;
+            {: RESULT = null; :} 
+        | Declaracion error  
+            {: RESULT = null; :} 
+        | Return error
+            {: RESULT = null; :} 
+        | Bartolo error
+            {: RESULT = null; :} 
+        | InsFunc error
+            {: RESULT = null; :} 
+        | Print error 
+            {: RESULT = null; :} ;
+        
+
+Type ::= INT: ent
+            {: RESULT = new Tipo(ent.lexema,true); :} 
+         | CHAR: char1 
+            {: RESULT = new Tipo(char1.lexema,true); :} 
+         | BOOL: bool1 
+            {: RESULT = new Tipo(bool1.lexema,true); :} 
+         | STRING: str 
+            {: RESULT = new Tipo(str.lexema,true); :};
+
+TypeFunc ::= Type:t EstructuraArray:e
+               {: RESULT = new TipoFunc(t, false); RESULT.tipo.dims = e; RESULT.tipo.nDim = e.size(); :}
+             | VOID: void1
+               {: RESULT = new TipoFunc(new Tipo(void1.lexema, true), true); :}
+             | IDEN:id EstructuraArray:e  //para devovler struct o arrays de struct
+               {: RESULT = new TipoFunc(new Tipo(id.lexema, true), false); RESULT.tipo.dims = e; RESULT.tipo.nDim = e.size(); :} ;
+
+
+Exp0 ::= Exp1:e1 AND:o Exp0:e0
+            {: RESULT = new ExpBinaria(e1, o.lexema, e0); :}
+         | Exp1:e1 OR:o Exp0:e0 
+            {: RESULT = new ExpBinaria(e1, o.lexema, e0); :}
+         | Exp1:exp 
+            {: RESULT = exp; :} ;
+
+Exp1 ::= Exp2:e2 MAY:o Exp2:e1
+            {: RESULT = new ExpBinaria(e2, o.lexema, e1); :}
+         | Exp2:e2 MEN:o Exp2:e1 
+            {: RESULT = new ExpBinaria(e2, o.lexema, e1); :}
+         | Exp2:e2 IGIG:o Exp2:e1
+            {: RESULT = new ExpBinaria(e2, o.lexema, e1); :}
+         | Exp2:e2 DESIG:o Exp2:e1
+            {: RESULT = new ExpBinaria(e2, o.lexema, e1); :}
+         | Exp2:e2 MAYIG:o Exp2:e1 
+            {: RESULT = new ExpBinaria(e2, o.lexema, e1); :}
+         | Exp2:e2 MENIG:o Exp2:e1
+            {: RESULT = new ExpBinaria(e2, o.lexema, e1); :}
+         | Exp2:exp 
+            {: RESULT = exp; :} ;
+
+Exp2 ::= Exp3:e3 MAS:o Exp2:e2
+            {: RESULT = new ExpBinaria(e3, o.lexema, e2); :}
+         | Exp3:e3 MENOS:o Exp2:e2
+            {: RESULT = new ExpBinaria(e3, o.lexema, e2); :}
+         | MENOS:o Exp3:exp
+            {: RESULT = new ExpUnaria(o.lexema, exp); :} 
+         | Exp3:exp 
+            {: RESULT = exp; :} ;
+
+Exp3 ::= Exp4:e4 POR:o Exp3:e3 
+            {: RESULT = new ExpBinaria(e4, o.lexema, e3); :}
+         | Exp4:e4 DIV:o Exp3:e3 
+            {: RESULT = new ExpBinaria(e4, o.lexema, e3); :}
+         | Exp4:exp 
+            {: RESULT = exp; :} ;
+
+Exp4 ::= NOT:o Exp4:exp 
+            {: RESULT = new ExpUnaria(o.lexema, exp); :}
+         | Exp5:e5 MOD:o Exp4:e4
+            {: RESULT = new ExpBinaria(e5, o.lexema, e4); :}
+         | Exp5:exp 
+            {: RESULT = exp; :} ;
+
+Exp5 ::= PAP Exp0:exp PCIERRE
+            {: RESULT = exp; :}
+         | TRUE: exp
+            {: RESULT = new ExpBasica("bool", exp.lexema); :} 
+         | FALSE: exp 
+            {: RESULT = new ExpBasica("bool", exp.lexema); :} 
+         | ENT: exp
+            {: RESULT = new ExpBasica("int", exp.lexema); :}
+         | CADENA: exp 
+            {: RESULT = new ExpBasica("String", exp.lexema); :} 
+         | CARACTER: exp
+            {: RESULT = new ExpBasica("char", exp.lexema); :}
+         | ExpFunc: exp
+            {: RESULT = exp; :}
+         | IDEN:id Estructura:e
+            {: RESULT = new Acceso(id.lexema, e); :} //Array o struct.
+         | IDEN:id 
+            {: RESULT = new Acceso(id.lexema); :} ; //variable
+
+
+ExpFunc ::= IDEN: id PAP SecExp:lParam PCIERRE
+               {: RESULT = new ExpFunc(id.lexema, lParam); :} 
+            | IDEN PAP error 
+               {: RESULT = null; :} ;
+
+
+Cond ::= PAP Exp0:exp PCIERRE
+            {: RESULT = exp; :} ;
+
+
+If ::= IF Cond:cond Bloque:bl END
+         {: RESULT = new InsIf(cond, bl); :}
+       | IF Cond:cond Bloque:bl1 ELSE Bloque:bl3 END
+         {: RESULT = new InsIf(cond, bl1, bl3); :}
+       | IF error Bloque END
+         {: RESULT = null; :} 
+       | IF Cond Bloque error // Falta de else y end.
+         {: RESULT = null; :} 
+       | IF error Bloque ELSE Bloque END 
+         {: RESULT = null; :} 
+       | IF Cond Bloque ELSE Bloque error  //Falta de end con else
+         {: RESULT = null; :} ;
+
+
+While ::= WHILE Cond:cond Bloque:bl
+            {: RESULT = new InsWhile(cond, bl); :} 
+          | WHILE error Bloque 
+            {: RESULT = null; :} ;
+
+
+Bartolo ::= BARTOLO 
+               {: RESULT = new InsBart(); :} ;
+
+
+Return ::= RETURN Exp0:exp
+            {: RESULT = new InsRet(exp); :} 
+           | RETURN error 
+            {: RESULT = null; :} ;
+
+
+InsFunc ::= IDEN:id PAP SecExp:lParam PCIERRE
+               {: RESULT = new InsFunc(id.lexema, lParam); :} 
+            | IDEN PAP error  //Falta de paréntesis o error en secuencia de expresiones
+               {: RESULT = null; :} ;
+
+
+InsExp ::= MASMAS IDEN:id
+            {: RESULT = new InsAsig(new ParteIzq(new Acceso(id.lexema)), new ParteDer(new ExpBinaria(new Acceso(id.lexema), "+", new ExpBasica("int", "1")))); :} 
+           | IDEN:id MASMAS 
+            {: RESULT = new InsAsig(new ParteIzq(new Acceso(id.lexema)), new ParteDer(new ExpBinaria(new Acceso(id.lexema), "+", new ExpBasica("int", "1")))); :} 
+           | MENOSMENOS IDEN:id
+            {: RESULT = new InsAsig(new ParteIzq(new Acceso(id.lexema)), new ParteDer(new ExpBinaria(new Acceso(id.lexema), "-", new ExpBasica("int", "1")))); :} 
+           | IDEN:id MENOSMENOS 
+            {: RESULT = new InsAsig(new ParteIzq(new Acceso(id.lexema)), new ParteDer(new ExpBinaria(new Acceso(id.lexema), "-", new ExpBasica("int", "1")))); :} ;
+
+
+Switch ::= SWITCH PAP Exp0:exp PCIERRE LAP ListaCases:lcases LCIERRE 
+            {: RESULT = new InsSwitch(exp, lcases); :}
+         | SWITCH error LAP ListaCases LCIERRE //error de paréntesis y expresion.
+            {: RESULT = null; :} 
+         | SWITCH PAP Exp0 PCIERRE error 
+            {: RESULT = null; :} ;
+
+ListaCases ::= ListaCases:lcase CASE Exp0:exp DOSPUNTOS Lins:lins  
+                  {: RESULT = lcase; lcase.add(new Case(exp, lins)); :} 
+               | CASE Exp0:exp DOSPUNTOS Lins:lins 
+                  {: RESULT = new ArrayList<Case>(); RESULT.add(new Case(exp, lins)); :}
+               | ListaCases CASE error Lins 
+                  {: RESULT = null; :} 
+               | CASE error Lins  // error en la expresión o dos puntos.
+                  {: RESULT = null; :} ;
+
+
+Print ::= PRINT PAP Exp0:exp PCIERRE
+            {: RESULT = new InsPrint(exp); :} 
+          | PRINT error 
+            {: RESULT = null; :} ; 
+
+
+//Asignaciones y dec inicializadas   
+Asignacion ::= ParteIzquierda:pi IGUAL ParteDerecha:pd 
+                  {: RESULT = new InsAsig(pi, pd); :} ; 
+               
+
+//Declaraciones sin inicializar          
+Declaracion ::= Type:t IDEN:id EstructuraArray:e 
+                  {: RESULT = new InsDec(t, id.lexema); RESULT.tipo.dims = e; RESULT.tipo.nDim = e.size(); :} //Declaracion de variable o array.
+                | IDEN:id1 IDEN:id3 EstructuraArray:e  
+                  {: RESULT = new InsDec(new Tipo(id1.lexema,false), id3.lexema); RESULT.tipo.dims = e ; RESULT.tipo.nDim = e.size(); :}  //Declaracion enum o struct (o array de structs o enums)
+                | Type error // falta el iden o corchetes en el estructura array
+                  {: RESULT = null; :} ;
+
+
+ParteIzquierda ::= Declaracion:dec
+                     {: RESULT = new ParteIzq(dec); :} //declaracion de variable array y struct
+                   | IDEN:id Estructura:e 
+                     {: RESULT = new ParteIzq(new Acceso(id.lexema, e)); :} // Acceso a arrays/structs.
+                   | IDEN:id 
+                     {: RESULT = new ParteIzq(new Acceso(id.lexema)); :} // Acceso a variable.
+                   | IDEN error  // error en la estructura (y en declaracion cuando llega un único iden)
+                     {: RESULT = null; :} ;
+
+ParteDerecha ::= Exp0:e
+                  {: RESULT = new ParteDer(e); :}
+                 | LInitArray:ia
+                  {: RESULT = new ParteDer(ia); :} 
+                 | error 
+                  {: RESULT = null; :} ;
+
+
+Estructura ::= Estructura:e CAP Exp0:exp CCIERRE
+                  {: RESULT = e; e.acc.add(exp); e.aux.add(1); :}
+               | Estructura:e PUNTO IDEN:id
+                  {: RESULT = e; e.acc.add(new ExpBasica("null", id.lexema)); e.aux.add(0); :}
+               | CAP Exp0:exp CCIERRE
+                  {: RESULT = new Estructura(); RESULT.acc.add(exp); RESULT.aux.add(1); :}
+               | PUNTO IDEN:id 
+                  {: RESULT = new Estructura(); RESULT.acc.add(new ExpBasica("null", id.lexema)); RESULT.aux.add(0); :} ;
+
+EstructuraArray ::= EstructuraArray:e CAP Exp0:exp CCIERRE 
+                     {: RESULT = e; e.add(exp); :}
+                    | 
+                     {: RESULT = new ArrayList<Expresion>(); :} 
+                    | EstructuraArray CAP error 
+                     {: RESULT = null; :} ;
+
+
+LInitArray ::= LAP InitArray:i LCIERRE
+                  {: RESULT = i; :} ;
+
+InitArray ::= SecExp:secE
+               {: RESULT = new InitArray(); RESULT.addExp(secE); :}
+              | SecInitArray:secI
+               {: RESULT = secI; :} ;
+
+SecExp ::= SecExp:sec COMA Exp0:exp 
+            {: RESULT = sec; sec.add(exp); :}
+           | Exp0:exp
+            {: RESULT = new ArrayList<Expresion>(); RESULT.add(exp); :}
+           |
+            {: RESULT = new ArrayList<Expresion>(); :} 
+           | SecExp COMA error 
+            {: RESULT = null; :} ;
+
+SecInitArray ::= SecInitArray:secI COMA LInitArray:l 
+                  {: RESULT = secI; secI.add(l); :}
+                 | LInitArray:l
+                  {: RESULT = new InitArray(); RESULT.add(l); :} 
+                 | error LInitArray 
+                  {: RESULT = null; :} ;

@@ -1,0 +1,8 @@
+Mario fichero1.txt
+Alex fichero2.txt fichero3.txt
+DeFrutis theBest.txt
+Amores theSpecial.txt
+Rocio fichero4.txt
+Gamboa hola.txt adios.txt
+Jisus biblia.txt
+Macarena rojo.txt azul.txt verde.txt

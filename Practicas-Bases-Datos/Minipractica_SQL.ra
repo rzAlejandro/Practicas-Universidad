@@ -1,0 +1,94 @@
+
+-- Para procesar este archivo (se puede especificar también la ruta): /process datos.ra
+-- Antes debéis crear las relaciones (tablas).
+-- Falta la última tupla de cada tabla y debéis escribir vosotros la instrucción de inserción en cada caso
+
+-- ALEJANDRO RAMÍREZ Y DAVID SEIJAS
+
+/abolish
+/multiline on
+/type_casting on
+
+create table jugadores
+  (nick varchar(36) primary key
+  ,edad int not null check (edad) > 0
+  ,ciudad varchar(36) not null);
+
+
+create table juegos
+  (nombre varchar(36) primary key
+  ,tipo varchar(36) not null check(tipo IN ('puzzle','plataformas','estrategia'))
+  ,niveles int not null check (niveles >= 1 AND niveles<=10));
+ 
+
+create table partidas
+  (juego varchar(36) not null
+  ,nick varchar(36) not null
+  ,nivel int not null check (nivel >= 1 AND nivel<=10)
+  ,superado char(1) not null check (superado IN ('S','N'))
+  ,tiempo int
+  ,primary key(juego, nick, nivel)
+  ,foreign key (juego) references juegos (nombre)
+  ,foreign key (nick) references jugadores (nick));
+
+INSERT INTO jugadores(nick, edad, ciudad) VALUES ('Azan',  20, 'Madrid');
+INSERT INTO jugadores(nick, edad, ciudad) VALUES ('Basra', 18, 'Segovia');
+INSERT INTO jugadores(nick, edad, ciudad) VALUES ('Cruc',  23, 'Madrid');
+INSERT INTO jugadores(nick, edad, ciudad) VALUES ('Eos',   60, 'Sevilla');
+INSERT INTO jugadores(nick, edad, ciudad) VALUES ('Luz',   20, 'Oviedo');
+INSERT INTO jugadores(nick, edad, ciudad) VALUES ('Zorai', 10, 'Sevilla');
+
+INSERT INTO juegos (nombre, tipo, niveles) VALUES ('Tetris', 'puzzle', 10);
+INSERT INTO juegos (nombre, tipo, niveles) VALUES ('Bubble', 'puzzle', 8);
+INSERT INTO juegos (nombre, tipo, niveles) VALUES ('Candy Crush', 'puzzle', 10);
+INSERT INTO juegos (nombre, tipo, niveles) VALUES ('Mine', 'puzzle', 7);
+INSERT INTO juegos (nombre, tipo, niveles) VALUES ('The Room', 'puzzle', 5);
+INSERT INTO juegos (nombre, tipo, niveles) VALUES ('Lyne', 'puzzle', 10);
+INSERT INTO juegos (nombre, tipo, niveles) VALUES ('Anomaly', 'estrategia', 2);
+INSERT INTO juegos (nombre, tipo, niveles) VALUES ('Age', 'estrategia', 10);
+INSERT INTO juegos (nombre, tipo, niveles) VALUES ('Empire', 'estrategia', 6);
+INSERT INTO juegos (nombre, tipo, niveles) VALUES ('Oscura', 'plataformas', 4);
+INSERT INTO juegos (nombre, tipo, niveles) VALUES ('BadLand', 'plataformas', 4);
+INSERT INTO juegos (nombre, tipo, niveles) VALUES ('RayMan', 'plataformas', 10);
+
+INSERT INTO partidas(juego, nick, nivel, superado)         VALUES ('Bubble', 'Azan', 1, 'N');
+INSERT INTO partidas(juego, nick, nivel, superado, tiempo) VALUES ('Bubble', 'Basra', 1, 'S', 10);
+INSERT INTO partidas(juego, nick, nivel, superado, tiempo) VALUES ('Mine', 'Azan', 1, 'S', 15);
+INSERT INTO partidas(juego, nick, nivel, superado, tiempo) VALUES ('Mine', 'Basra', 1, 'S', 25);
+INSERT INTO partidas(juego, nick, nivel, superado)         VALUES ('Lyne', 'Cruc', 1, 'N');
+INSERT INTO partidas(juego, nick, nivel, superado, tiempo) VALUES ('Lyne', 'Eos', 1, 'S', 50);
+INSERT INTO partidas(juego, nick, nivel, superado, tiempo) VALUES ('RayMan', 'Zorai', 1, 'S', 30);
+INSERT INTO partidas(juego, nick, nivel, superado, tiempo) VALUES ('RayMan', 'Eos', 1, 'S', 30);
+INSERT INTO partidas(juego, nick, nivel, superado, tiempo) VALUES ('BadLand', 'Eos', 1, 'S', 30);
+INSERT INTO partidas(juego, nick, nivel, superado)         VALUES ('Age', 'Azan', 1, 'N');
+INSERT INTO partidas(juego, nick, nivel, superado, tiempo) VALUES ('Age', 'Basra', 1, 'S', 20);
+INSERT INTO partidas(juego, nick, nivel, superado, tiempo) VALUES ('BadLand', 'Eos', 2, 'S', 40);
+INSERT INTO partidas(juego, nick, nivel, superado, tiempo) VALUES ('BadLand', 'Eos', 3, 'S', 50);
+INSERT INTO partidas(juego, nick, nivel, superado, tiempo) VALUES ('BadLand', 'Eos', 4, 'S', 60);
+INSERT INTO partidas(juego, nick, nivel, superado, tiempo) VALUES ('BadLand', 'Azan', 1, 'S', 140);
+INSERT INTO partidas(juego, nick, nivel, superado, tiempo) VALUES ('BadLand', 'Azan', 2, 'S', 140);
+INSERT INTO partidas(juego, nick, nivel, superado, tiempo) VALUES ('BadLand', 'Azan', 3, 'S', 150);
+INSERT INTO partidas(juego, nick, nivel, superado, tiempo) VALUES ('BadLand', 'Azan', 4, 'S', 160);
+INSERT INTO partidas(juego, nick, nivel, superado, tiempo) VALUES ('Empire', 'Azan', 1, 'S', 60);
+INSERT INTO partidas(juego, nick, nivel, superado, tiempo) VALUES ('Empire', 'Azan', 2, 'S', 60);
+INSERT INTO partidas(juego, nick, nivel, superado, tiempo) VALUES ('Empire', 'Azan', 3, 'S', 60);
+INSERT INTO partidas(juego, nick, nivel, superado, tiempo) VALUES ('Empire', 'Azan', 4, 'S', 60);
+INSERT INTO partidas(juego, nick, nivel, superado, tiempo) VALUES ('Empire', 'Azan', 5, 'S', 60);
+INSERT INTO partidas(juego, nick, nivel, superado, tiempo) VALUES ('Empire', 'Azan', 6, 'S', 60);
+INSERT INTO partidas(juego, nick, nivel, superado)         VALUES ('Tetris', 'Azan', 1, 'N');
+INSERT INTO partidas(juego, nick, nivel, superado, tiempo) VALUES ('Tetris', 'Basra', 1, 'S', 10);
+INSERT INTO partidas(juego, nick, nivel, superado, tiempo) VALUES ('Tetris', 'Azan', 2, 'S', 15);
+INSERT INTO partidas(juego, nick, nivel, superado, tiempo) VALUES ('Tetris', 'Basra', 2, 'S', 25);
+INSERT INTO partidas(juego, nick, nivel, superado)         VALUES ('Tetris', 'Cruc', 1, 'N');
+INSERT INTO partidas(juego, nick, nivel, superado, tiempo) VALUES ('Tetris', 'Eos', 1, 'S', 50);
+INSERT INTO partidas(juego, nick, nivel, superado, tiempo) VALUES ('Tetris', 'Zorai', 1, 'S', 30);
+INSERT INTO partidas(juego, nick, nivel, superado, tiempo) VALUES ('Tetris', 'Eos', 2, 'S', 30);
+
+
+-- vista 1;
+create view r1 as select juegos.tipo, partidas.tiempo from juegos, partidas where juegos.nombre=partidas.juego and nivel=1 and superado='S';
+
+create view r2 as select r1.tipo,r1.tiempo from r1,r1 AS r12 where r1.tipo=r12.tipo and r1.tiempo<r12.tiempo;
+
+create view vista1 as SELECT *  from r1 except select * from r2;
+select distinct * from vista1;

@@ -1,0 +1,63 @@
+ESPECIFICACIONES DE LA APLICACIÓN:
+
+	1. Nuestra aplicación permite enviar ficheros de texto de un cliente a otro.
+
+	2. Todos los terminales que ejecuten el programa deben situarse en el interior de src.
+
+	3. Para ejecutar servidor : java Servidor users.txt 
+
+	4. Para ejecutar cada cliente : java Cliente 50x siendo x el nº de clientes creados.
+Por ejemplo, el primer Cliente sería java Cliente 500. El primer argumento es el puerto para conectarse con Servidor.
+
+	5. Servidor carga la información de los usuarios REGISTRADOS desde users.txt
+
+	6. Si un cliente se conecta, pasa a ser usuario CONECTADO. Para ello ha de estar registrado y que nadie más 
+se haya conectado con su nombre.
+
+	7. Al solicitar la lista, aparece la información de todos los usuarios REGISTRADOS.
+
+	8. Los clientes solo pueden pedir ficheros a usuarios conectados (para que el otro cliente se lo pueda enviar)
+
+	9. Si el cliente ya tenía el fichero, se le avisará y no se procederá a la descarga.
+
+	10. Cada cliente tendrá en la carpeta src una carpeta propia con sus ficheros. 
+Si se descarga un fichero, aparecerá en esa carpeta.
+
+	11. Si en algún momento ocurre algún fallo, se mostrará en la interfaz del usuario qué ha sucedido.
+	
+	12. Si tienes MAC o LINUX puedes probar la funcion crearListaMAC, que escribe con colores en la pantalla, haciéndola
+más intuitiva. Simplemente sería cambiar la funcion crearLista de la clase OS en el case3 por la crearListaMAC.
+
+
+
+ESPECIFICACIÓN ESTRUCTURAS DE DATOS:
+
+Hemos utilizado las siguientes estructuras de datos en la clase Servidor, visibles para cada OyenteCliente creado.
+
+	1. Tabla_Usuarios: mapa que contine usuario con su canal de entrada y salida.
+
+	2. Tabla_Info: contiene dos mapas, uno con la lista de ficheros y otro con un booleano para comprobar si
+está conectado.
+
+
+
+MÉTODOS DE PROGRAMACIÓN CONCURRENTE:
+
+Hemos incluido los tres métodos aprendidos a lo largo del curso:
+
+	1. Locks: controlar exclusión mutua en la clase Puerto. Puerto la utilizamos para ver qué puerto
+le corresponde a un emisor. 
+	
+	2. Semáforos: controlar todo el acceso a tabla_Usuarios. Utilizamos la técnica de paso de testigo. 
+También los utilizamos para establecer una barrera entre Cliente (interfaz con el usuario) y su correspondiente OyenteServidor. 
+Así conseguimos que si el usuario pide una lista, se vea reflejada en la interfaz en ese momento; 
+y no después de volver a mostrar el menú.
+
+	3. Monitor: controlar todo el acceso a la tabla_Info. Utilizamos un reentrantLock. El monitor sigue un esquema 
+Readers-Writers, permitiendo el paso de múltiples lectores a la sección crítica, siempre y cuando no haya un escritor.
+Se da prioridad a Readers, pues si al llegar hay otros readers dentro, no importa que un escritor estuviese esperando antes.
+
+
+
+
+

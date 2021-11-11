@@ -1,0 +1,19 @@
+struct persona {
+	String nombre;
+	int edad [5][3];
+	String dni;
+};
+
+void Main(){
+	persona personas [3]; 
+	persona puta = personas[2]; 
+	String a = personas[1].nombre; 
+	int b = personas[2].edad[1][2];
+	int hola [3] = personas[1].edad[1];
+	personas[1].nombre = "Hola";
+	puta.dni = "alex putero"; 
+	int putas [10] = {1,2,3,4,5,6,7,8,9,10};
+	int matrix [2][4] = {{1,2,3,4},{5,6,7,8}};
+	matrix [2][4] = 3; 
+	bool hoho [2][3][4][2] = { { {{true,false},{true,false},{true,false},{true,false}}, {{true,false},{true,false},{true,false},{true,false}}, {{true,false},{true,false},{true,false},{true,false}} },     { {{true,false},{true,false},{true,false},{true,false}}, {{true,false},{true,false},{true,false},{true,false}}, {{true,false},{true,false},{true,false},{true,false}} }     };
+}

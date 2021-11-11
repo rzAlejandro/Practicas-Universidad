@@ -1,0 +1,23 @@
+enum Color = { ROJO, AMARILLO };
+
+void Main(){
+	int a = 5;
+	int i = 1;
+	while(i < a){
+		int b = 10;
+		print(b+i);
+		i++;
+	}
+	if(true){
+		int b = 10000;
+		print(b+5);
+	}end
+	int c = 100;
+	c--;
+	print(c+a);
+	
+	switch(a%2){
+		case 0: print(0);
+		case 1: print(1);
+	}
+}

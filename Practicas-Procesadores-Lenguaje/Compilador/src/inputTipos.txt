@@ -1,0 +1,42 @@
+enum Color = { ROJO, AZUL, VERDE, AMARILLO, NEGRO, BLANCO };
+enum Coche = { FERRARI, LAMBORGHINI, PORSCHE, JAGUAR, MERCEDES, AUDI };
+
+struct persona {
+	String nombre;
+	int edad;
+	String dni;
+};
+
+int suma(int a, int b){
+	c = a + b;
+	return c;
+}
+
+void holaMundo(){
+	print("Hola mundo");
+}
+
+void Main(){
+	int a = 2;
+	int b;
+	bool jeje;
+	b = 3;
+	d = suma(a, b);
+	persona persona;
+	switch(d%2){
+		case 0: jeje = true && ((b == 2) || 3*4+2==3) && (!true);
+			jeje = false;
+			bartolo;
+		case 1: bartolo;
+	}
+	while(a < 2){
+		a = a - 1;
+		persona.nombre = "David";
+	}
+	if(a==2){
+		jeje = false;
+	}
+	else{
+		return jeje;
+	}end
+}
